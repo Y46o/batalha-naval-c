@@ -1,81 +1,113 @@
 #include <stdio.h>
 
-#define TAMANHO 10      // Define o tamanho do tabuleiro (10x10)
-#define NAVIO_TAM 3     // Define o tamanho fixo dos navios
+#define TAM 10
+#define NAVIO 3
 
 int main() {
 
-    // Declaração da matriz que representa o tabuleiro
-    int tabuleiro[TAMANHO][TAMANHO];
+    // ===============================
+    // 1. Declaração do tabuleiro
+    // ===============================
+    int tabuleiro[TAM][TAM];
 
-    // Inicialização do tabuleiro com 0 (representando água)
-    for (int i = 0; i < TAMANHO; i++) {
-        for (int j = 0; j < TAMANHO; j++) {
+    // Inicializa todo o tabuleiro com 0 (água)
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
             tabuleiro[i][j] = 0;
         }
     }
 
-    // ==========================
-    // Definição do primeiro navio (horizontal)
-    // ==========================
+    // ===============================
+    // 2. Navio Horizontal
+    // ===============================
+    int linha_h = 1, coluna_h = 2;
 
-    int navio_horizontal[NAVIO_TAM] = {3, 3, 3};  // Vetor representando o navio
-    int linha_h = 2;   // Linha inicial
-    int coluna_h = 4;  // Coluna inicial
+    if (coluna_h + NAVIO <= TAM) {
 
-    // Validação de limite horizontal
-    if (coluna_h + NAVIO_TAM <= TAMANHO) {
-
-        // Verificação de sobreposição
         int sobreposicao = 0;
-        for (int i = 0; i < NAVIO_TAM; i++) {
-            if (tabuleiro[linha_h][coluna_h + i] != 0) {
+
+        for (int i = 0; i < NAVIO; i++) {
+            if (tabuleiro[linha_h][coluna_h + i] != 0)
                 sobreposicao = 1;
-            }
         }
 
-        // Posicionamento do navio se não houver sobreposição
         if (!sobreposicao) {
-            for (int i = 0; i < NAVIO_TAM; i++) {
-                tabuleiro[linha_h][coluna_h + i] = navio_horizontal[i];
+            for (int i = 0; i < NAVIO; i++) {
+                tabuleiro[linha_h][coluna_h + i] = 3;
             }
         }
     }
 
-    // ==========================
-    // Definição do segundo navio (vertical)
-    // ==========================
+    // ===============================
+    // 3. Navio Vertical
+    // ===============================
+    int linha_v = 4, coluna_v = 0;
 
-    int navio_vertical[NAVIO_TAM] = {3, 3, 3};  // Vetor representando o navio
-    int linha_v = 5;   // Linha inicial
-    int coluna_v = 1;  // Coluna inicial
-
-    // Validação de limite vertical
-    if (linha_v + NAVIO_TAM <= TAMANHO) {
+    if (linha_v + NAVIO <= TAM) {
 
         int sobreposicao = 0;
-        for (int i = 0; i < NAVIO_TAM; i++) {
-            if (tabuleiro[linha_v + i][coluna_v] != 0) {
+
+        for (int i = 0; i < NAVIO; i++) {
+            if (tabuleiro[linha_v + i][coluna_v] != 0)
                 sobreposicao = 1;
-            }
         }
 
-        // Posicionamento do navio se não houver sobreposição
         if (!sobreposicao) {
-            for (int i = 0; i < NAVIO_TAM; i++) {
-                tabuleiro[linha_v + i][coluna_v] = navio_vertical[i];
+            for (int i = 0; i < NAVIO; i++) {
+                tabuleiro[linha_v + i][coluna_v] = 3;
             }
         }
     }
 
-    // ==========================
-    // Exibição do tabuleiro
-    // ==========================
+    // ===============================
+    // 4. Navio Diagonal ↘ (principal)
+    // ===============================
+    int linha_d1 = 6, coluna_d1 = 6;
 
-    printf("\nTABULEIRO BATALHA NAVAL (NÍVEL NOVATO)\n\n");
+    if (linha_d1 + NAVIO <= TAM && coluna_d1 + NAVIO <= TAM) {
 
-    for (int i = 0; i < TAMANHO; i++) {
-        for (int j = 0; j < TAMANHO; j++) {
+        int sobreposicao = 0;
+
+        for (int i = 0; i < NAVIO; i++) {
+            if (tabuleiro[linha_d1 + i][coluna_d1 + i] != 0)
+                sobreposicao = 1;
+        }
+
+        if (!sobreposicao) {
+            for (int i = 0; i < NAVIO; i++) {
+                tabuleiro[linha_d1 + i][coluna_d1 + i] = 3;
+            }
+        }
+    }
+
+    // ===============================
+    // 5. Navio Diagonal ↙ (secundária)
+    // ===============================
+    int linha_d2 = 0, coluna_d2 = 9;
+
+    if (linha_d2 + NAVIO <= TAM && coluna_d2 - (NAVIO - 1) >= 0) {
+
+        int sobreposicao = 0;
+
+        for (int i = 0; i < NAVIO; i++) {
+            if (tabuleiro[linha_d2 + i][coluna_d2 - i] != 0)
+                sobreposicao = 1;
+        }
+
+        if (!sobreposicao) {
+            for (int i = 0; i < NAVIO; i++) {
+                tabuleiro[linha_d2 + i][coluna_d2 - i] = 3;
+            }
+        }
+    }
+
+    // ===============================
+    // 6. Exibição do Tabuleiro
+    // ===============================
+    printf("\nTABULEIRO - NÍVEL AVENTUREIRO\n\n");
+
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
             printf("%d ", tabuleiro[i][j]);
         }
         printf("\n");
