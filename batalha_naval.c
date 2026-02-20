@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h> // para abs()
 
-#define TAM 10       // Tamanho do tabuleiro
-#define HAB 5        // Tamanho das matrizes de habilidade
+#define TAM 10
+#define HAB 5
 
 int main() {
 
@@ -12,10 +12,9 @@ int main() {
 
     int tabuleiro[TAM][TAM];
 
-    // Inicializa todas as posições com 0 (água)
     for (int i = 0; i < TAM; i++) {
         for (int j = 0; j < TAM; j++) {
-            tabuleiro[i][j] = 0;
+            tabuleiro[i][j] = 0; // 0 = Água
         }
     }
 
@@ -24,17 +23,17 @@ int main() {
     // =====================================================
 
     // Navio horizontal
-    tabuleiro[4][4] = 3;
-    tabuleiro[4][5] = 3;
-    tabuleiro[4][6] = 3;
+    for (int j = 3; j <= 5; j++) {
+        tabuleiro[6][j] = 3;
+    }
 
     // Navio vertical
-    tabuleiro[1][8] = 3;
-    tabuleiro[2][8] = 3;
-    tabuleiro[3][8] = 3;
+    for (int i = 1; i <= 3; i++) {
+        tabuleiro[i][8] = 3;
+    }
 
     // =====================================================
-    // 3. CRIAÇÃO DAS MATRIZES DE HABILIDADE
+    // 3. CRIAÇÃO DINÂMICA DAS MATRIZES DE HABILIDADE
     // =====================================================
 
     int cone[HAB][HAB];
@@ -43,12 +42,12 @@ int main() {
 
     int centro = HAB / 2;
 
-    // Construção dinâmica das formas
     for (int i = 0; i < HAB; i++) {
         for (int j = 0; j < HAB; j++) {
 
             // -------------------------
-            // CONE (aponta para baixo)
+            // CONE (apontando para baixo)
+            // Expande horizontalmente conforme desce
             // -------------------------
             if (j >= centro - i && j <= centro + i)
                 cone[i][j] = 1;
@@ -57,6 +56,7 @@ int main() {
 
             // -------------------------
             // CRUZ
+            // Linha central e coluna central
             // -------------------------
             if (i == centro || j == centro)
                 cruz[i][j] = 1;
@@ -65,7 +65,7 @@ int main() {
 
             // -------------------------
             // OCTAEDRO (LOSANGO)
-            // Distância Manhattan
+            // Distância Manhattan <= centro
             // -------------------------
             if (abs(i - centro) + abs(j - centro) <= centro)
                 octaedro[i][j] = 1;
@@ -75,12 +75,14 @@ int main() {
     }
 
     // =====================================================
-    // 4. SOBREPOSIÇÃO DAS HABILIDADES NO TABULEIRO
+    // 4. FUNÇÃO DE SOBREPOSIÇÃO COM VALIDAÇÃO
     // =====================================================
 
-    // ----------- APLICANDO CONE -----------
-    int origem_linha = 2;
-    int origem_coluna = 2;
+    int origem_linha, origem_coluna;
+
+    // ---------- CONE ----------
+    origem_linha = 2;
+    origem_coluna = 2;
 
     for (int i = 0; i < HAB; i++) {
         for (int j = 0; j < HAB; j++) {
@@ -88,17 +90,16 @@ int main() {
             int linha_tab = origem_linha + i - centro;
             int coluna_tab = origem_coluna + j - centro;
 
-            // Verificação de limites
             if (linha_tab >= 0 && linha_tab < TAM &&
                 coluna_tab >= 0 && coluna_tab < TAM) {
 
-                if (cone[i][j] == 1)
-                    tabuleiro[linha_tab][coluna_tab] = 5;
+                if (cone[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] != 3)
+                    tabuleiro[linha_tab][coluna_tab] = 5; // 5 = Habilidade
             }
         }
     }
 
-    // ----------- APLICANDO CRUZ -----------
+    // ---------- CRUZ ----------
     origem_linha = 7;
     origem_coluna = 7;
 
@@ -111,14 +112,14 @@ int main() {
             if (linha_tab >= 0 && linha_tab < TAM &&
                 coluna_tab >= 0 && coluna_tab < TAM) {
 
-                if (cruz[i][j] == 1)
+                if (cruz[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] != 3)
                     tabuleiro[linha_tab][coluna_tab] = 5;
             }
         }
     }
 
-    // ----------- APLICANDO OCTAEDRO -----------
-    origem_linha = 5;
+    // ---------- OCTAEDRO ----------
+    origem_linha = 4;
     origem_coluna = 2;
 
     for (int i = 0; i < HAB; i++) {
@@ -130,21 +131,27 @@ int main() {
             if (linha_tab >= 0 && linha_tab < TAM &&
                 coluna_tab >= 0 && coluna_tab < TAM) {
 
-                if (octaedro[i][j] == 1)
+                if (octaedro[i][j] == 1 && tabuleiro[linha_tab][coluna_tab] != 3)
                     tabuleiro[linha_tab][coluna_tab] = 5;
             }
         }
     }
 
     // =====================================================
-    // 5. EXIBIÇÃO FINAL DO TABULEIRO (0, 3, 5)
+    // 5. EXIBIÇÃO DO TABULEIRO (COM CONDICIONAIS)
     // =====================================================
 
     printf("\nTABULEIRO FINAL\n\n");
 
     for (int i = 0; i < TAM; i++) {
         for (int j = 0; j < TAM; j++) {
-            printf("%2d ", tabuleiro[i][j]);
+
+            if (tabuleiro[i][j] == 0)
+                printf("0 ");
+            else if (tabuleiro[i][j] == 3)
+                printf("3 ");
+            else if (tabuleiro[i][j] == 5)
+                printf("5 ");
         }
         printf("\n");
     }
